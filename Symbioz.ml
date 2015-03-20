@@ -1,3 +1,17 @@
+(****************************************)
+
+(**  Nom : ATTIA                       **)
+(**  Prenom : Anthony                  **)
+(**  Année : 2014 - 2015               **)
+
+(***************************************)
+
+
+
+
+
+(*** Début du projet ***)
+
 let _ = Random.self_init();;
 
 (*************** 5.2 Listes ***************)
@@ -387,15 +401,17 @@ struct
       None
     else
       Some { ind with life = ind.life -2};;
-  
+
+  (* On récupère le maximum d'une liste *)
   let max_list l = 
     List.fold_right (fun x -> fun y -> if x > y then x else y ) l 0;;
 
-  
+  (* On récupere grace à la fonction d'évaluation, la quantité de nourriture à chaque case adjacente;; en cas d'égalité on choisit 
+    au hasard la direction parmis celle qui présente le plus de nourriture *)
   let bouger fe ind = 
     if ind.life <= 4
     then
-      let recup_positions  = 
+       let recup_positions  = 
 	List.map (fun f -> f ind.pos) [P.est ; P.ouest ; P.nord ; P.sud] 
       in 
       let eval = 
@@ -414,14 +430,14 @@ struct
     let nb_tour_adulte =  (Random.int 5) + 2 
     in
     match get_age  with 
-      
     |Bebe -> if ind.nb_tour = 0 then Some{ind with age = Enfant; nb_tour = 2} 
       else Some {ind with age = Bebe ;  nb_tour = ind.nb_tour -1  }
 
     |Enfant -> if ind.nb_tour = 0 then Some{ind with age = Adulte ; nb_tour = nb_tour_adulte} 
       else Some { ind with age = Enfant; nb_tour = ind.nb_tour - 1 }
 
-    |Adulte -> if ind.nb_tour = 0 then None else Some {ind with nb_tour = ind.nb_tour -1} ;;
+    |Adulte -> if ind.nb_tour = 0 then None 
+      else Some {ind with nb_tour = ind.nb_tour -1} ;;
   
   let afficher ind =
     print_string (string_of_age(ind.age))
@@ -510,8 +526,11 @@ module type MAKE_ANIMAUX = functor(P:PLANETE)
 
 (* Question 19*)
 
-(*** Foncteur Make_zherbs : MAKE_PLANTES ***)
+(*** Foncteur Make_zherbs : MAKE_PLANTES 
+***)
 
+(*** Cette partie reste à terminer, pour raisons de temps je n'ai pas eu la possibilité de la terminer et de la finaliser ***)
+(***
 module Make_Zherbs : MAKE_PLANTES =
   functor(P:PLANETE) -> functor(MI:MAKE_INDIVIDU) -> 
 struct
@@ -539,15 +558,15 @@ struct
   let sous_population position popu= P.at_pos(position) popu 
   let vieillissement pop = clean_list(map MIP.vieillir pop);;
   let mouvement nou pop = map MIP.bouger pop;;
-  
+  let nourriture nou pop  = (), clean_list(map MIP.manger pop);; 
+  let sous_population pos pop = P.at_pos P.pos pop 
+  let kill_individu individu population = List.filter (fun l -> individu.pos) pop;;
+
   
 end;;
 
 (*
-let nourriture nou pop  = (), clean_list(map MIP.manger pop);; 
-val sous_population : pos-> population -> population 
-let sous_population pos pop = P.at_pos P.pos pop 
-let kill_individu individu population = List.filter (fun l -> individu.pos) pop;;
+
 let pos x = x >= 0;;
 let id = 2;;
 List.filter (fun x -> (List.exists  pos [1;2;3;4;5])) [1;2;3;4;5];;
@@ -562,3 +581,4 @@ let random i =
 
 let max_list l = 
   List.fold_right (fun x -> fun y -> if x > y then x else y ) l 0;;
+***)
