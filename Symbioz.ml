@@ -23,7 +23,7 @@ let rec insert_at_pos  x liste  n =
   | [] -> [x]
   | h :: t as l -> if n = 0 then x :: l else h :: insert_at_pos  x t (n-1) ;;
 
-(* Quetion  2 *)
+(* Question 2 *)
 (* Insere un élémenet à une position aléatoire dans une liste *)
 let  insert_at_random  x liste =
   let pos = Random.int (( List.length liste) +1)
@@ -33,14 +33,15 @@ let  insert_at_random  x liste =
 (* Mélange une liste en prenant ses éléments un par un et en les insérant à une position aléatoire  *)
 let  shuffle  listeInit  = 
   let rec melange l1 l2 = match l1 with 
-  |[] -> l2
-  |hd::t -> melange(t ) (insert_at_random hd l2 )
+    |[] -> l2
+    |hd::t -> melange(t ) (insert_at_random hd l2 )
   in melange (List.tl listeInit) [(List.hd listeInit)]
   
 
 (* Question 4 *)
-(* *)
-let  random_get  = function
+(* Extrait au hasard un élément de la liste, l'indice de la position d'un élément dans la liste est choisit au hasard *)
+let  random_get  liste =
+  match liste with 
   | [] -> None
   | l -> let pos = Random.int ( List.length l)  
 	 in Some (List.nth l pos);;
@@ -49,7 +50,7 @@ random_get  ["a";"b";"c"];;
 
 
 (* Question 5 *)
-(* renvoi la liste des éléments qui ne sont pas none *)
+(* renvoi la liste des éléments qui ne sont pas None *)
 let  clean_list l =
   let rec aux lb lr =
     match lr with
@@ -59,12 +60,15 @@ let  clean_list l =
   in aux [] l;;
 
 (*************** 5.3 Age et sexe  ***************)
+
 (* Question 6 *) 
+
 type sexe = Feminin|Masculin;;
 
 type age = Bebe | Enfant | Adulte;;
 
 (* Question 7 *)
+
 (* Retourne le sexe d'un invidu au hasard lors de la création d'un nouvel individu  *)
 let  random_sex () =  
   let search = Random.int 2 in
@@ -80,7 +84,8 @@ let random_age () =
   |_ -> Adulte;;
 
 
-(* 8 *)
+(* Question 8 *)
+
 (* fonction qui transforme un element de type sexe en string *)
 let string_of_sex sexe = 
   match sexe with 
@@ -100,6 +105,7 @@ let string_of_age age =
 (*************** 6.1 Signature  ***********************)
 
 (* Question 9 *)
+
 (* Déclaration du module planete *)
 module type PLANETE = 
 sig
@@ -118,6 +124,7 @@ end;;
 (*************** 6.2 Module    ***************)
 
 (* Question 10 *)
+
 (* Implémentation  du module Symbioz:PLANETE, la planète est de taille size_x et size_y  *)  
 
 module Symbioz:PLANETE = 
@@ -126,29 +133,29 @@ struct
   let size_x = 10;;
   let size_y = 10;;
 
-  type pos = int * int
+  type pos = int * int;;
 
   let ouest (x,y)  =
-    if x = 0  then  size_x-1 ,y  else (x - 1), y
-      
+    if x = 0  then  size_x-1 ,y  else (x - 1), y;;
+  
   let est (x, y)  =
-    if x = size_x  then 1,y else (x + 1) ,y
+    if x = size_x  then 1,y else (x + 1) ,y;;
 
   let nord (x, y) =
-    if y = size_y then x, 1 else x , (y+1)  
+    if y = size_y then x, 1 else x , (y+1);;
 
   let sud (x, y) =
     match y with
     |0 -> (x,size_y -1)
-    |_ -> (x, (y-1))
-      
-  let  random_pos() = (Random.int size_x) , (Random.int size_y)
+    |_ -> (x, (y-1));;
+  
+  let  random_pos() = (Random.int size_x) , (Random.int size_y);;
   
   (* Fonction récurvise qui prend une fonction d'évaluation une position et une liste, renvoyant la liste des éléments présents à la position donnée *)    
   let rec  at_pos f pos l  =
     match l with
     |[] -> []
-    |hd::t -> if pos = f hd then hd::at_pos f pos t else at_pos f pos t 
+    |hd::t -> if pos = f hd then hd::at_pos f pos t else at_pos f pos t;;
 
   (* Fonction qui renvoie une liste de listes, chacune de ces listes étant l'ensemble  de tous les éléments à une position donnée *)
   let rec sort_by_pos f list = 
@@ -160,11 +167,12 @@ struct
 	in 
         search_y 0 @ search_x (x+ 1)
     in
-    search_x 0
-      
-  let display f (x,y) = f x y 
-    
-  let clear() = ()
+    search_x 0;;
+  
+  let display f (x,y) = f x y ;;
+  
+  let clear() = ();;
+
 end;;
 
 (*************** 7 Génétique élémentaire   ***************)
@@ -183,6 +191,7 @@ sig
   val bouger : (pos->int) -> individu -> individu 
   val vieillir : individu -> individu option
   val afficher  : individu -> unit
+  val position_individu : individu -> pos 
 end;;
 
 
@@ -191,33 +200,44 @@ module type MAKE_INDIVIDU = functor( P:PLANETE) -> INDIVIDU with type pos = P.po
 
 
 (***************** 7.2 zherbs *********************)
+
+(* Question 13 *)
+
 module Make_Zherb : MAKE_INDIVIDU = 
   functor (P:PLANETE) ->
 struct 
-  let last_id =  ref 0
-  type pos = P.pos
-  type individu = {age: age ; id_individu:int; pos:pos}
-  exception Sexe_error
-  let egalite ind_1 ind_2 = if ind_1.id_individu  = ind_2.id_individu then true else false
-      
+
+  
+  type pos = P.pos;;
+  type individu = {age: age ; id_individu:int; pos:pos};;
+  
+  let last_id =  ref 0;;
+  
+  exception Sexe_error;;
+  
+  (* Compare les id des deux individus pour savoir si ils sont égaux *)
+  let egalite ind_1 ind_2 = if ind_1.id_individu  = ind_2.id_individu then true else false;;
+
+  (* Crée aléatoirement un nouvel enregistrement d'une zherbs avec des valeurs aléatoires *)    
   let create_random () = 
     let age =  random_age() in  
     let position = P.random_pos() in
     last_id := !last_id +1; 
     let id_individu = !last_id in 
-    {age = age ; id_individu = id_individu; pos = position}
-      
+    {age = age ; id_individu = id_individu; pos = position};;
+  
+  (* Crée  un nouvel enregistrement d'une zherbs avec des valeurs données *) 
   let create_zherbs age  position = 
-    let age = age in 
-    let position = position in 
     last_id := !last_id +1; 
     let id_individu = !last_id in 
-    {age = age ; id_individu = id_individu; pos = position}
+    {age = age ; id_individu = id_individu; pos = position};;
+  
+  (* L'appel de cette fonction lève une erreur car une zherbs n'a pas de sexe *)
+  let sex_individu ind = raise Sexe_error;; 
+  let age_individu ind = ind.age;;
+  let position_individu ind = ind.pos;;
 
-  let sex_individu ind = raise Sexe_error 
-    
-  let age_individu ind = ind.age
-
+  (* Une zherb née qu'avec une seule autre zherb *)
   let reproduire e p m = 
     let new_pos = match Random.int 10 with
       |0 -> P.est m.pos
@@ -232,19 +252,22 @@ struct
       |_ -> (new_ind ()) ::(create_list_zherbs (e-1) new_ind)
     in 
     create_list_zherbs e new_ind;;
-  
+
+  (* Renvoi individu option car une zherbs ne mange pas *)
   let manger e ind = 
     Some ind
       
+  (* Renvoi l'individu initial change mise à jour de la position car une zherbs ne bouge pas *)    
   let bouger fe ind = 
-    ind
-      
+    ind;;
+  
+  (* Une zherbs passe un tour bébé, un tour enfant et un tour adulte *)
   let vieillir ind = 
     let age_ind = ind.age in 
     match age_ind  with 
     |Bebe -> Some {ind with age = Enfant}
     |Enfant ->Some { ind with age =  Adulte}
-    |Adulte -> None 
+    |Adulte -> None;;
 
   let afficher ind =
     print_string (string_of_age(ind.age) )
@@ -252,43 +275,46 @@ struct
 end;;
 
 (***************** 7.3 Krapits ****************)
+(* Question 14 *)
 module Make_Krhapit : MAKE_INDIVIDU = 
   functor (P:PLANETE) ->
 struct 
   
-  let last_id =  ref 0;;
   
-  let life_max =  6;;
 
   type pos = P.pos;;
   type individu = {age: age ; nb_tour:int; sexe:sexe ; id_individu:int; pos:pos; life:int};;
   
   exception Sexe_error;;
 
+  let last_id =  ref 0;;
+  let life_max =  6;;
+
+  (* Compare les id des deux individus pour savoir si ils sont égaux *)
   let egalite ind_1 ind_2 = if ind_1.id_individu  = ind_2.id_individu then true else false;;
-  
+
+  (* Crée aléatoirement un nouvel enregistrement d'un krapits avec des valeurs aléatoires *)
   let create_random () = 
     let age =  random_age() in  
     let sexe = random_sex() in 
     let position = P.random_pos() in
     let nb_tour = 0 in
-    let lifek = 6 in
     last_id := !last_id +1; 
     let id_individu = !last_id in 
-    {age = age; sexe = sexe ; id_individu = id_individu; pos = position ; life =  lifek ; nb_tour = nb_tour }
-      
+    {age = age; sexe = sexe ; id_individu = id_individu; pos = position ; life =  life_max; nb_tour = nb_tour };;
+
+  (* Crée  un nouvel enregistrement d'un krapits avec des valeurs données *)
   let create_krapits age sexe position = 
     last_id := !last_id +1; 
     {age = age; sexe = sexe ; id_individu = !last_id; pos = position; life = 6; nb_tour = 0 };;
   
+  (* Récupération des attributs d'un krapits *)
   let sex_individu ind = ind.sexe ;;
-  
   let age_individu ind = ind.age;;
-
   let life_individu ind = ind.life;;
-
   let position_individu ind = ind.pos;;
   
+  (* Fonction de reproduction entre 2 krapits, ils peuvent faire de 1 à 5 enfants *)
   let reproduire e p m = 
     let new_pos = match Random.int 5  with
       |0 -> P.est m.pos
@@ -305,6 +331,7 @@ struct
     in 
     create_list_krapits e new_ind;;
   
+  (* Fonction qui fait manger un krapits, si ce dernier ne mange pas il perd un point de vie à chaque tour, si il mange, sa vie revient au max *)
   let manger e ind =
     if e <>  0
     then
@@ -315,6 +342,7 @@ struct
     else
       Some {ind with life = ind.life -1};;
 
+  (* Un krapits peut bouger dans une direction aléatoirement *)
   let bouger fe ind = 
     if ind.life <= 3 
     then
@@ -327,7 +355,7 @@ struct
     else
       ind;;
 
-  
+  (* Un krapits vit un tour enfant, un tour bébé, et de 1 à 4 tours adulte puis meurt *)
   let vieillir ind = 
     
     let get_age = ind.age in 
@@ -338,44 +366,53 @@ struct
     |Adulte -> if ind.nb_tour = 0 then None else Some {ind with nb_tour = ind.nb_tour -1} ;;
   
   let afficher ind =
-    print_string (string_of_age(ind.age))
+    print_string (string_of_age(ind.age));;
 
 end;;
 
-
+(***************** 7.3 Krapits ****************)
+(** Question 15 **)
 module Make_Krogul : MAKE_INDIVIDU = 
   functor (P:PLANETE) ->
 struct 
   
-  let last_id =  ref 0;;
-  let life_max =  6;;
-  let nb_max_enfant = 2;;
+  
   type pos = P.pos;;
   type individu = {age: age ; nb_tour:int; sexe:sexe ; id_individu:int; pos:pos; life:int};;
   
   exception Sexe_error;;
 
+  (* Variables globales *)
+  let last_id =  ref 0;;
+  let life_max =  6;;
+  let nb_max_enfant = 2;;
+  
+  (* Compare les id des deux individus pour savoir si ils sont égaux *)
   let egalite ind_1 ind_2 = if ind_1.id_individu  = ind_2.id_individu then true else false;;
   
+  (* Crée aléatoirement un nouvel enregistrement d'un kroguls avec des valeurs aléatoires *)
   let create_random () = 
     let age =  random_age() in  
     let sexe = random_sex() in 
     let position = P.random_pos() in
     let nb_tour = 0 in
-    let lifek = 6 in
     last_id := !last_id +1; 
     let id_individu = !last_id in 
-    {age = age; sexe = sexe ; id_individu = id_individu; pos = position ; life =  lifek ; nb_tour = nb_tour }
-      
+    
+    {age = age; sexe = sexe ; id_individu = id_individu; pos = position ; life =  life_max ; nb_tour = nb_tour };;
+  
+  (* Crée un nouvel individu avec des valeurs données *)
   let create_krogul age sexe position = 
     last_id := !last_id +1; 
-    {age = age; sexe = sexe ; id_individu = !last_id; pos = position; life = 6; nb_tour = 0 };;
+    {age = age; sexe = sexe ; id_individu = !last_id; pos = position; life = life_max; nb_tour = 0 };;
   
+  (* Récupéarations des données de l'individu *)
   let sex_individu ind = ind.sexe ;;
   let age_individu ind = ind.age;;
   let life_individu ind = ind.life;;
   let position_individu ind = ind.pos;;
   
+  (* Reproduction entre 2 kroguls *)
   let reproduire e p m = 
     let new_pos = match Random.int 20  with
       |0 -> P.est m.pos
@@ -392,6 +429,7 @@ struct
     in 
     create_list_krogul e new_ind;;
   
+  (* Fait manger un krogul *)
   let manger e ind =
     if e <>  0  && ind.life <= 6 
     then
@@ -407,11 +445,11 @@ struct
     List.fold_right (fun x -> fun y -> if x > y then x else y ) l 0;;
 
   (* On récupere grace à la fonction d'évaluation, la quantité de nourriture à chaque case adjacente;; en cas d'égalité on choisit 
-    au hasard la direction parmis celle qui présente le plus de nourriture *)
+     au hasard la direction parmis celle qui présente le plus de nourriture *)
   let bouger fe ind = 
     if ind.life <= 4
     then
-       let recup_positions  = 
+      let recup_positions  = 
 	List.map (fun f -> f ind.pos) [P.est ; P.ouest ; P.nord ; P.sud] 
       in 
       let eval = 
@@ -422,8 +460,9 @@ struct
       let au_hasard = Random.int(List.length max_eval) in 
       {ind with pos = List.nth recup_positions au_hasard }
     else 
-      ind
-	
+      ind;;
+  
+  (* En fonction d 'un nombre de tour défini, un krogul vit la durée du nombre de tour lors de sa création et passe de 2 à 5 tours adulte *)	
   let vieillir ind = 
     let get_age = ind.age 
     in 
@@ -440,45 +479,12 @@ struct
       else Some {ind with nb_tour = ind.nb_tour -1} ;;
   
   let afficher ind =
-    print_string (string_of_age(ind.age))
+    print_string (string_of_age(ind.age));;
 
 
 end;;
 
 
-let random_test i =
-  let v = Random.int i in
-  print_int v;;
-
-let test_unit i = 
-  print_string i;;
-
-(* 8 *)
-(*if ind.life <= 4
-  then
-  if fe (P.ouest ind.pos) < fe (P.est ind.pos) then
-  if fe (P.est ind.pos) < fe (P.nord ind.pos) then
-  if fe(P.nord ind.pos) < fe (P.sud ind.pos) then
-  P.sud ind.pos
-  else
-  P.nord ind.pos
-  else if fe (P.est ind.pos) > fe (P.sud ind.pos)
-  then
-  P.est ind.pos
-  else
-  P.sud ind.pos
-  else if fe (P.ouest ind.pos) > fe (P.nord ind.pos)
-  then 
-  P.ouest ind.pos
-  else
-  P.nord ind.pos
-  else
-  fe(P.est ind.pos)
-  else
-  P.ouest ind.pos 
-  else
-  ind;;
-*)
 
 (* Question 16 *)
 (*** Implémentation  de la signature population  ***)
@@ -490,30 +496,30 @@ sig
   type individu 
   type population
   type nourriture
- 
   
   val create_pop : int -> population
   val reduce : (individu -> 'a ->'a) -> population -> 'a -> 'a 
   val map :('a -> 'b) -> 'a list -> 'b list
   val iter: ('a -> unit ) -> 'a list -> unit 
-  val sous_population : pos -> population    
   val vieillissement : population -> population
-  val random_get_ind  : population -> population option
   val mouvement :  nourriture -> population -> population 
-  val reproduction  : population -> population
   val kill_individu : individu -> population -> population
   val nourriture :nourriture -> population -> (nourriture * population)
-   
-  
-
+  val sous_pop : pos -> population -> population
+    
 end;;
+
 
 (* Question 17 *)
 
 (*Declaration de la signature MAKE_PLANTES, elle prend en paramètre un individu et un make_individu renvoyant une population *)
 module type MAKE_PLANTES = functor(P:PLANETE ) 
     -> functor(MI:MAKE_INDIVIDU) 
-	-> POPULATION with type pos = P.pos and type nourriture = unit;;
+	-> POPULATION with type pos = P.pos 
+		      and type nourriture = unit 
+		      and type individu = MI(P).individu;;
+
+
 
 
 (* Question 18 *)
@@ -524,24 +530,24 @@ module type MAKE_ANIMAUX = functor(P:PLANETE)
 	-> functor(MI:MAKE_INDIVIDU ) 
 	    -> POPULATION with type pos = P.pos and type nourriture = unit;;  
 
+
+
+
 (* Question 19*)
 
-(*** Foncteur Make_zherbs : MAKE_PLANTES 
-***)
-
-(*** Cette partie reste à terminer, pour raisons de temps je n'ai pas eu la possibilité de la terminer et de la finaliser ***)
-(***
+(*** Foncteur Make_zherbs : MAKE_PLANTES  ***)
 module Make_Zherbs : MAKE_PLANTES =
   functor(P:PLANETE) -> functor(MI:MAKE_INDIVIDU) -> 
 struct
   
-  module MIP = MI(P)
-    
+  module MIP = MI(P);;
+  
   type pos = P.pos
-  type individu = MIP.individu
-  type population = individu list 
-  type nourriture = unit
+  type individu = MIP.individu;;
+  type population = individu list;;  
+  type nourriture = unit;;
 
+  (* fonction récurvise, insérant chaque nouvel individu crée dans la population *)
   let insert_ind_population_list nombre_individu new_individu =
     let rec insert_ind_population_list e new_ind  = match e with
       |0 -> []
@@ -549,36 +555,36 @@ struct
     in 
     insert_ind_population_list nombre_individu new_individu;;
 
+  (* Chaque individu est crée aléatoirement et y est ajouté  à la population pour créer la nouvelle population *)
   let create_pop nbre_individu = insert_ind_population_list nbre_individu  MIP.create_random;;
   
+  (* fonctions sur les listes *)
   let map = List.map
   let reduce = List.fold_right
   let iter = List.iter
-    
-  let sous_population position popu= P.at_pos(position) popu 
-  let vieillissement pop = clean_list(map MIP.vieillir pop);;
-  let mouvement nou pop = map MIP.bouger pop;;
-  let nourriture nou pop  = (), clean_list(map MIP.manger pop);; 
-  let sous_population pos pop = P.at_pos P.pos pop 
-  let kill_individu individu population = List.filter (fun l -> individu.pos) pop;;
+  let filter = List.filter
 
+  (* En cas de mort l'age de l'individu passe à none, clean_list enlève ces individus morts de la liste population *)
+  let vieillissement pop = clean_list(map MIP.vieillir pop);;
+
+  (* Une plante ne bouge pas, donc on renvoit que la population avec toutes les plantes à leurs positions initiale *)
+  let mouvement nou pop =  pop;; 
   
+  (* On filtre l'individu donnée en argument avec celui dans la population, si ces deux correspondent, on recrée une nouvelle liste privée de l'individu trouvé *)
+  let kill_individu individu pop = filter (fun ind_list ->not ( MIP.egalite ind_list individu)) pop;;
+  
+  (* Prend aléatoirement un élément de type individu dans la liste population, renvoie None si population est vide *)
+  let random_get_ind population = random_get population;;
+  
+  (* Les plantes ne se nourrissent pas *)
+  let nourriture nour population  = ((),population);; 
+  
+  (* Renvoie la population dans la case donnée, on se sert de la fonction at_pos qui récupère la liste des éléments à une pos donnée *)
+  let sous_pop  pos population = P.at_pos (MIP.position_individu ) pos population 
+
 end;;
 
 (*
-
-let pos x = x >= 0;;
-let id = 2;;
-List.filter (fun x -> (List.exists  pos [1;2;3;4;5])) [1;2;3;4;5];;
-
-
-
+  let sous_population pos pop = P.at_pos P.pos pop 
 *)
-let random i = 
-  let x = (Random.int i) +1  in
-  print_int x ;;
 
-
-let max_list l = 
-  List.fold_right (fun x -> fun y -> if x > y then x else y ) l 0;;
-***)
