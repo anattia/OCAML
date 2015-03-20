@@ -584,7 +584,5 @@ struct
 
 end;;
 
-(*
-  let sous_population pos pop = P.at_pos P.pos pop 
-*)
+(****** A finir *****)
 

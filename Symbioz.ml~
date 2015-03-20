@@ -355,7 +355,7 @@ struct
     else
       ind;;
 
-  
+  (* Un krapits vit un tour enfant, un tour bébé, et de 1 à 4 tours adulte puis meurt *)
   let vieillir ind = 
     
     let get_age = ind.age in 
